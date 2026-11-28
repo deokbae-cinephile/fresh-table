@@ -1,0 +1,68 @@
+# GitHub Actions Deploy 워크플로우
+# main 브랜치에 병합 시 자동으로 GitHub Pages에 배포
+name: Deploy
+
+on:
+  # main 브랜치에 푸시 시 실행
+  push:
+    branches: [main]
+  # 수동 실행 허용
+  workflow_dispatch:
+
+# GitHub Pages에 배포하기 위한 권한 설정
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# 동일한 워크플로우가 중복 실행되는 것 방지
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # 빌드 및 배포 Job
+  deploy:
+    name: GitHub Pages 배포
+    runs-on: ubuntu-latest
+    steps:
+      # 코드 체크아웃
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Node.js 환경 설정 (v20 LTS)
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      # pnpm 설치
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11
+
+      # GitHub Pages 설정
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      # 의존성 설치 (빌드용)
+      - name: Install dependencies
+        run: pnpm install --ignore-scripts
+
+      # Next.js 빌드 (GitHub Pages용 정적 파일 생성)
+      - name: Build Next.js
+        run: pnpm build
+
+      # GitHub Pages에 업로드할 아티팩트 생성
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          # Next.js export 디렉토리 업로드
+          path: .next
+
+      # GitHub Pages에 배포
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

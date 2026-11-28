@@ -1,36 +1,90 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Fresh Table (프레쉬 테이블)
 
-## Getting Started
+신선한 수산물과 농작물 구독 및 판매 전문 서비스
 
-First, run the development server:
+## 기술 스택
+
+- **프레임워크**: Next.js 16.4.6 (App Router)
+- **언어**: TypeScript 5.9.3 (Strict Mode)
+- **스타일링**: Tailwind CSS 4.3.3
+- **테스트**: Vitest 3.2.7 (유닛), Playwright 1.65.1 (E2E)
+- **Mocking**: MSW 2.15.0 (Mock Service Worker)
+
+## 기능
+
+- 수산물과 농작물 목록 화면 (필터링, 호버/터치 상세 정보)
+- 로그인, 회원가입, 주문, 결제
+- 구독 서비스, 바로 구매 서비스, 장바구니 담기
+- 마이페이지 (주문 내역, 배송 상태)
+
+## 개발 환경 설정
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+# 의존성 설치
+pnpm install
+
+# 개발 서버 실행
 pnpm dev
-# or
-bun dev
+
+# 테스트 실행
+pnpm test        # 유닛 테스트 (Vitest)
+pnpm test:e2e    # E2E 테스트 (Playwright)
+
+# 코드 품질 검사
+pnpm lint        # ESLint
+pnpm typecheck   # TypeScript 타입 검사
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 프로젝트 구조
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+fresh-table/
+├── app/              # Next.js App Router (라우팅, 레이아웃)
+├── src/              # 소스 코드
+│   ├── components/   # 재사용 가능한 UI 컴포넌트
+│   ├── features/     # 기능 단위 모듈
+│   ├── domain/       # 도메인 로직 및 엔티티
+│   ├── hooks/        # 커스텀 훅
+│   ├── mocks/        # MSW Mock Server 및 테스트 데이터
+│   ├── pages/        # 페이지 컴포넌트
+│   ├── stores/       # 상태 관리 (Zustand 등)
+│   ├── styles/       # 전역 스타일
+│   ├── types/        # TypeScript 타입 정의
+│   └── utils/        # 유틸리티 함수
+├── e2e/              # Playwright E2E 테스트
+├── public/           # 정적 에셋 (이미지, 아이콘)
+│   ├── crops/        # 농작물 이미지
+│   └── seafood/      # 수산물 이미지
+└── .github/          # GitHub Actions 워크플로우
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 테스트
 
-## Learn More
+```bash
+# 모든 테스트 실행
+pnpm lint
+pnpm typecheck
+pnpm test
+pnpm test:e2e
+```
 
-To learn more about Next.js, take a look at the following resources:
+## 배포
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+GitHub Pages에 자동 배포됩니다.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- **URL**: https://deokbae-cinephile.github.io/fresh-table
+- **워크플로우**: `.github/workflows/deploy.yml`
 
-## Deploy on Vercel
+## 접근성
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+모든 컴포넌트는 WCAG 2.2 및 한국형 웹 콘텐츠 접근성 지침 (KWCAG 2.2) 을 준수합니다.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- 시맨틱 HTML 태그 사용
+- 키보드 내비게이션 지원
+- 명도 대비 4.5:1 이상 (큰 글자 3:1)
+- ARIA 속성 적용
+- 화면 리더기 지원
+
+## 라이선스
+
+MIT

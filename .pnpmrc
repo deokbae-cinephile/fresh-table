@@ -1,0 +1,2 @@
+auto-install-peers=true
+supportedArchitectures={"os":["darwin"],"cpu":["arm64"],"libc":["lib"]}
