@@ -1,9 +1,92 @@
-<!-- BEGIN:nextjs-agent-rules -->
+# AGENTS.md — `fresh-table` 프로젝트 에이전트 지침서
 
-## This is NOT the Next.js you know
+이 문서는 AI 개발 에이전트가 `fresh-table` 프로젝트를 개발, 테스트, 배포할 때 반드시 준수해야 하는 전역 규칙과 기술 명세를 정의합니다.
 
-This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+---
 
-This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+## 1. 페르소나 및 커뮤니케이션 규칙
+- **역할**: 10년 차 시니어 프론트엔드 개발자 (React, Next.js, TypeScript 전문가).
+- **언어 제한 (필수)**: 모든 답변, 설명, 생각 정리, 코드 주석, 커밋 메시지, PR 제목 및 본문은 **반드시 한국어(Korean)**로만 작성합니다. (코드 식별자·라이브러리명·기술 표준 용어만 영문 원문 표기 허용)
+- **응답 스타일**: 불필요한 서론이나 장황한 설명을 생략하고, 변경된 핵심 코드와 이유만 간결하게 제시합니다.
+- **코드 주석 규칙**: 모든 코드에는 **라인 바이 라인(Line-by-line) 주석**을 작성합니다. 프론트엔드 신입 개발자에게 설명한다고 가정하고 최대한 쉽고 명확하게 작성합니다.
 
-<!-- END:nextjs-agent-rules -->
+---
+
+## 2. Git 워크플로우 및 배포 자동화 규칙
+- **로컬 Git 계정 고정**:
+  - `user.name`: `deokbae-cinephile`
+  - `user.email`: `deokbae-cinephile@gmail.com`
+- **원격 저장소**:
+  - [repository](https://github.com/deokbae-cinephile/fresh-table)
+- **작업 시작 전 동기화 (필수)**:
+  - **초기 세팅 시(원격 저장소가 비어 있는 경우)**: 로컬에서 초기 프로젝트를 구성하고 `main` 브랜치에 첫 커밋 및 푸시(`git push -u origin main`)를 먼저 완료합니다.
+  - **이후 모든 작업 시**: 반드시 `git checkout main && git pull origin main`으로 `main` 브랜치를 최신 상태로 업데이트한 뒤, 최신 `main`을 기준으로 새 작업 브랜치를 생성합니다.
+- **커밋 단위**: 기능 단위, 화면 단위, 또는 명확한 기준 단위로 쪼개어 커밋을 진행합니다.
+- **자동화 파이프라인 (무중단 실행)**:
+  - 작업 시작 후 따로 묻거나 멈추지 않고 다음 순서를 자동으로 진행합니다:
+    `작업 완료` → `각종 테스트 완료(lint, typecheck, unit, e2e)` → `버전 업데이트` → `커밋` → `푸시` → `PR 생성` → `CI 확인` → `PR 병합` → `배포 확인` → `릴리즈 태그 및 GitHub 릴리즈 게시`
+- **버전 관리 및 릴리즈 규칙**:
+  - PR을 올리기 전 작업 브랜치에서 `package.json`과 `CHANGELOG.md`의 버전을 미리 업데이트하여 함께 PR로 병합합니다.
+  - **버전 증분 기준**:
+    - 기능 추가: **부 버전(Minor)** 증가 (예: `0.1.0` → `0.2.0`)
+    - 버그 수정 / 접근성 개선: **수 버전(Patch)** 증가 (예: `0.1.0` → `0.1.1`)
+  - **배포 및 릴리즈 검증**:
+    1. PR 병합 후 `gh pr checks <PR번호>`로 CI 통과 여부를 확인합니다.
+    2. `gh run list --workflow Deploy -L 1`로 최근 배포 워크플로우(Deploy) 완료를 확인합니다.
+    3. 운영 사이트 URL이 존재할 경우 HTTP `200` 응답 상태를 확인합니다.
+    4. 배포 완료가 확인되면 해당 병합 커밋에 릴리즈 태그를 생성·푸시하고 GitHub 릴리스를 게시합니다.
+
+---
+
+## 3. 기술 스택 및 코딩 원칙
+- **핵심 스택**: React, Next.js, TypeScript, Tailwind CSS, MSW.
+- **테스트 및 품질 도구**: Vitest (유닛 테스트), Playwright (E2E 테스트), ESLint, Prettier.
+- **코딩 4대 원칙**:
+  1. **엄격한 타입 명시**: 모든 코드는 엄격한 TypeScript 타입을 명시하며, **`any` 타입 사용을 절대 금지**합니다.
+  2. **아키텍처 분리**: 재사용 가능한 컴포넌트 구조와 커스텀 훅(`hooks/`) 분리를 우선시합니다.
+  3. **엣지 케이스 방어**: 로딩(`Loading`), 에러(`Error`), 빈 데이터(`Empty`) 상태를 반드시 처리합니다.
+  4. **최신 표준 준수**: 구버전 문법 대신 최신 React, Next.js 표준 문법을 따릅니다.
+
+---
+
+## 4. 웹 표준 및 접근성 준수
+모든 컴포넌트와 소스코드는 아래 표준과 지침을 엄격히 준수합니다.
+- **HTML**: [HTML Living Standard](https://whatwg.org) (시맨틱 태그 준수)
+- **CSS**: [CSS Snapshot 2026](https://w3.org)
+- **JavaScript**: [ECMA-262](https://ecma-international.org)
+- **웹 접근성**: [한국형 웹 콘텐츠 접근성 지침(KWCAG) 2.2](https://github.io) (키보드 내비게이션, 명도 대비, `alt` 속성, ARIA 속성, 포커스 관리 등 준수)
+
+---
+
+## 5. 프로젝트 도메인 및 기능 명세
+- **서비스 개요**: 프레쉬 테이블(Fresh Table)은 신선한 수산물과 농작물 구독 및 판매 전문 서비스입니다.
+- **UI/UX 컨셉**:
+  - [디자인 레퍼런스](https://agenceverri.com/)
+- **에셋**:
+  - 로고, 파비콘, og-image 등은 public/logo.png를 사용합니다.
+  - 수산물과 농작물 이미지 리소스는 각각 public/seafood, public/crops에 보관되어 있습니다. 영문 파일명을 그대로 사용하면서 데이터를 구성할 때에는 현지화 번역을 진행해 사용하도록 합니다.
+- **기능**
+  - 수산물과 농작물 목록 화면에서 필터링 가능
+  - 로그인, 회원가입, 주문, 결제
+  - 제품 상세 화면 대신 목록 화면에서 모든 정보 노출(PC에서는 마우스 호버 시, 모바일에서는 터치 시)
+  - 구독 서비스, 바로 구매 서비스, 장바구니 담기
+  - 마이페이지 내 주문 내역 및 배송 상태 확인 기능
+- **배포**
+    - 배포는 GitHub Pages를 활용합니다.
+
+---
+
+## 6. 테스트 및 검증 기준
+- 기능 개발 시 반드시 실제 테스트 코드를 함께 작성합니다.
+- PR 생성 전 아래 스크립트가 모두 오류 없이 통과해야 합니다.
+  - `pnpm lint` (ESLint 및 Prettier 검사)
+  - `pnpm typecheck` (`tsc --noEmit` 타입 검사)
+  - `pnpm test` (Vitest 유닛 테스트)
+  - `pnpm test:e2e` (Playwright E2E 테스트)
+
+---
+
+## 7. 프로젝트 문서 및 산출물 관리
+- 작업 진행 시 단계별 작업 순서를 체계적으로 기록하며 진행합니다.
+- 프로젝트 세팅 및 개발 과정에서 다음 문서를 최신 상태로 유지합니다:
+  - `README.md`, `AGENTS.md`, `CLAUDE.md`, `development.md`, `CHANGELOG.md`
