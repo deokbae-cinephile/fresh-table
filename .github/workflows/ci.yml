@@ -1,0 +1,67 @@
+# GitHub Actions CI 워크플로우
+# PR 생성 시 자동으로 테스트 실행
+name: CI
+
+on:
+  # PR 생성/업데이트 시 실행
+  pull_request:
+    branches: [main]
+  # main 브랜치에 푸시 시 실행
+  push:
+    branches: [main]
+
+# 동일한 워크플로우가 중복 실행되는 것 방지
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # 코드 품질 검사Job (Lint, TypeCheck, Test)
+  quality:
+    name: 코드 품질 검사
+    runs-on: ubuntu-latest
+    steps:
+      # 코드 체크아웃
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Node.js 환경 설정 (v22 LTS - pnpm v11 요구 사양)
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      # pnpm 전역 설치 (actions/setup-node은 pnpm 자동 설치 안 함)
+      - name: Install pnpm
+        run: npm install -g pnpm@11
+
+      # 의존성 설치
+      - name: Install dependencies
+        run: pnpm install --ignore-scripts
+
+      # Playwright 브라우저 설치 (CI 환경에서 E2E 테스트 실행)
+      - name: Install Playwright browsers
+        run: pnpm exec playwright install --with-deps chromium
+
+      # ESLint 검사
+      - name: Run ESLint
+        run: pnpm lint
+
+      # TypeScript 타입 검사
+      - name: Run TypeScript check
+        run: pnpm typecheck
+
+      # Vitest 유닛 테스트 (테스트 파일 없음으로 건너뜀)
+      # - name: Run Vitest unit tests
+      #   run: pnpm test
+
+      # Playwright E2E 테스트
+      # Next.js 서버 기동 후 E2E 테스트 실행
+      - name: Build and start Next.js
+        run: |
+          pnpm build
+          pnpm start &
+          sleep 10
+
+      - name: Run Playwright E2E tests
+        run: pnpm test:e2e
