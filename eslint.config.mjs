@@ -37,7 +37,6 @@ const eslintConfig = defineConfig([
         afterEach: "readonly",
         // Playwright globals
         test: "readonly",
-        expect: "readonly",
         // MSW globals
         http: "readonly",
         HttpResponse: "readonly",
