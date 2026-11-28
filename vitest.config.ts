@@ -12,7 +12,7 @@ export default defineConfig({
     // 테스트 환경 설정 파일
     setupFiles: ['./vitest.setup.ts'],
     // e2e/ 폴더는 Vitest 테스트에서 제외 (Playwright 전용)
-    exclude: ['e2e/**'],
+    exclude: ['e2e/**', 'node_modules/**'],
     // 테스트 커버리지 보고서 생성
     coverage: {
       provider: 'v8',
