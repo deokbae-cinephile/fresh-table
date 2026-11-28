@@ -39,6 +39,10 @@ jobs:
       - name: Install dependencies
         run: pnpm install --ignore-scripts
 
+      # Playwright 브라우저 설치 (CI 환경에서 E2E 테스트 실행)
+      - name: Install Playwright browsers
+        run: pnpm exec playwright install --with-deps chromium
+
       # ESLint 검사
       - name: Run ESLint
         run: pnpm lint
