@@ -30,18 +30,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # Node.js 환경 설정 (v20 LTS)
+      # Node.js 환경 설정 (v22 LTS - pnpm v11 요구 사양)
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'pnpm'
+          node-version: '22'
 
-      # pnpm 설치
+      # pnpm 전역 설치 (actions/setup-node은 pnpm 자동 설치 안 함)
       - name: Install pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 11
+        run: npm install -g pnpm@11
 
       # GitHub Pages 설정
       - name: Setup Pages
