@@ -75,16 +75,4 @@ GitHub Pages에 자동 배포됩니다.
 - **URL**: https://deokbae-cinephile.github.io/fresh-table
 - **워크플로우**: `.github/workflows/deploy.yml`
 
-## 접근성
 
-모든 컴포넌트는 WCAG 2.2 및 한국형 웹 콘텐츠 접근성 지침 (KWCAG 2.2) 을 준수합니다.
-
-- 시맨틱 HTML 태그 사용
-- 키보드 내비게이션 지원
-- 명도 대비 4.5:1 이상 (큰 글자 3:1)
-- ARIA 속성 적용
-- 화면 리더기 지원
-
-## 라이선스
-
-MIT
